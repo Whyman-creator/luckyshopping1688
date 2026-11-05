@@ -51,7 +51,12 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
         try {
           const parsed = JSON.parse(savedProds);
           // Purge stale mock products from early dev
-          const hasDummyMock = parsed.some((p: Product) => p.id === "prod-1" || p.name?.includes("Niacinamide"));
+          const hasDummyMock = parsed.some(
+            (p: Product) =>
+              p.id === "prod-1" ||
+              p.name?.includes("Niacinamide") ||
+              p.name?.includes("Pupuk Organik Cair Hayati")
+          );
           if (hasDummyMock) {
             localStorage.removeItem("mitra_hub_categories");
             localStorage.removeItem("mitra_hub_products");
@@ -90,8 +95,12 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
             localStorage.setItem("mitra_hub_categories", JSON.stringify(dbCategories));
           }
           if (!errProds && dbProducts && dbProducts.length > 0) {
-            setProducts(dbProducts);
-            localStorage.setItem("mitra_hub_products", JSON.stringify(dbProducts));
+            const mappedProducts = dbProducts.map((p) => ({
+              ...p,
+              price: p.price ?? p.price_consumer ?? 0,
+            }));
+            setProducts(mappedProducts);
+            localStorage.setItem("mitra_hub_products", JSON.stringify(mappedProducts));
           }
           if (!errAssets && dbAssets) {
             setAssets(dbAssets);
@@ -159,9 +168,8 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
             full_description: newProduct.full_description,
             usp: newProduct.usp,
             target_market: newProduct.target_market,
-            price: newProduct.price,
-            price_consumer: newProduct.price,
-            price_partner: newProduct.price,
+            price_consumer: newProduct.price || newProduct.price_consumer || 0,
+            price_partner: newProduct.price || newProduct.price_partner || 0,
             margin: 0,
             faqs: newProduct.faqs,
             copywritings: newProduct.copywritings,
@@ -188,7 +196,13 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
   const updateProduct = async (id: string, productData: Partial<Product>) => {
     if (isSupabaseConfigured && supabase) {
       try {
-        await supabase.from("products").update(productData).eq("id", id);
+        const payload: Record<string, unknown> = { ...productData };
+        if ("price" in payload) {
+          payload.price_consumer = payload.price;
+          payload.price_partner = payload.price;
+          delete payload.price;
+        }
+        await supabase.from("products").update(payload).eq("id", id);
       } catch (err) {
         console.error("Error updating product in Supabase:", err);
       }

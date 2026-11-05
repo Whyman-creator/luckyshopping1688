@@ -3,86 +3,57 @@ import { Category, Product, ProductAsset } from "@/types";
 export const INITIAL_CATEGORIES: Category[] = [
   {
     id: "b25f80e6-4f9c-417a-8a8d-842b3baa2ee4",
-    name: "Pertanian & Alam",
-    slug: "pertanian-alam",
-    description: "Bibit, pupuk, alat pertanian, dan hasil kebun.",
+    name: "Pertanian",
+    slug: "pertanian",
+    description: "Pembenah tanah, pupuk organik, dan kebutuhan pertanian.",
     icon: "🌾",
     display_order: 1,
-  },
-  {
-    id: "cat-1",
-    name: "Skincare & Kecantikan",
-    slug: "skincare-kecantikan",
-    description: "Serum, toner, sunscreen, dan perawatan wajah terlaris.",
-    icon: "Sparkles",
-    display_order: 2,
-  },
-  {
-    id: "cat-2",
-    name: "Fashion & Hijab",
-    slug: "fashion-hijab",
-    description: "Koleksi hijab voal, gamis, dan outfit trendy.",
-    icon: "Shirt",
-    display_order: 3,
-  },
-  {
-    id: "cat-3",
-    name: "Herbal & Kesehatan",
-    slug: "herbal-kesehatan",
-    description: "Madu murni, suplemen herbal, dan peningkat imun tubuh.",
-    icon: "HeartPulse",
-    display_order: 4,
-  },
-  {
-    id: "cat-4",
-    name: "Gadget & Aksesoris",
-    slug: "gadget-aksesoris",
-    description: "TWS Earphone, smartwatch, dan aksesoris HP kekinian.",
-    icon: "Headphones",
-    display_order: 5,
-  },
-  {
-    id: "cat-5",
-    name: "Makanan & Minuman",
-    slug: "makanan-minuman",
-    description: "Camilan viral dan kopi bubuk nusantara.",
-    icon: "Utensils",
-    display_order: 6,
   },
 ];
 
 export const INITIAL_PRODUCTS: Product[] = [
   {
-    id: "fa12954b-bf5f-4e6b-a361-d8ca6917fd52",
-    name: "Pupuk Organik Cair Hayati Super Tani 1 Liter",
-    slug: "pupuk-organik-cair-hayati-super-tani-1-liter",
+    id: "c6aa245a-3094-4ac6-adf2-11feec580867",
+    name: "Nusatani Asam Humat Premium",
+    slug: "nusatani-asam-humat-premium",
     category_id: "b25f80e6-4f9c-417a-8a8d-842b3baa2ee4",
-    short_description: "Pupuk hayati penyubur tanah dan perangsang buah/tunas cepat tumbuh alami.",
-    full_description: "Pupuk hayati cair konsentrat tinggi mengandung mikroba penyubur tanah Bacillus sp. dan Trichoderma sp. Mempercepat pertumbuhan akar, memperbanyak anakan padi, dan meningkatkan hasil panen hingga 40%.",
+    short_description: "Nusatani Asam Humat Premium adalah pembenah tanah alami konsentrat tinggi untuk memperbaiki kesuburan tanah dan mengoptimalkan penyerapan pupuk.",
+    full_description: "Nusatani Asam Humat Premium diekstrak dari bahan organik alami berkualitas tinggi dengan konsentrasi asam humat dan asam fulvat tinggi. Berfungsi sebagai pembenah tanah (soil conditioner) yang meregenerasi tanah tandus, meningkatkan KTK tanah, dan mempercepat serapan nutrisi tanaman.",
     usp: [
-      "100% Organik Alami",
-      "Meningkatkan Hasil Panen 40%",
-      "Mencegah Layu & Hama Jamur"
+      "100% Organik Alami Pembenah Tanah",
+      "Tingkatkan Efisiensi Pupuk Kimia 30-50%",
+      "Gemburkan Tanah Padat & Tandus",
+      "Merangsang Pertumbuhan Akar & Tunas Baru"
     ],
-    target_market: "Petani padi, sayuran hortikultura, dan perkebunan.",
-    price: 65000,
-    price_consumer: 65000,
-    price_partner: 65000,
+    target_market: "Petani padi, hortikultura (cabai, tomat, bawang), tanaman perkebunan, dan tanaman hias.",
+    price: 60000,
+    price_consumer: 60000,
+    price_partner: 60000,
     margin: 0,
-    cover_image: "https://images.unsplash.com/photo-1628352081506-83c43123ed6d?auto=format&fit=crop&w=800&q=80",
+    cover_image: "https://pub-b5908ce97ecc42c18b39affa40116c39.r2.dev/covers/1793913713779-premium_asam_humat_garden_pouch.png",
     is_published: true,
     faqs: [
       {
-        question: "Bagaimana cara pemakaiannya?",
-        answer: "Campurkan 3-5 tutup botol ke dalam tangki semprot 14-16 liter air."
+        question: "Bagaimana dosis dan cara pemakaiannya?",
+        answer: "Larutkan 1-2 gram Asam Humat per 1 liter air, kocor ke pangkal tanaman atau semprotkan merata ke tanah sebelum penanaman."
+      },
+      {
+        question: "Apakah bisa dicampur dengan pupuk lain?",
+        answer: "Sangat bisa! Asam humat sangat baik dicampur pupuk NPK/Urea agar nutrisi pupuk terikat sempurna dan tidak mudah tercuci air hujan."
       }
     ],
     copywritings: [
       {
-        id: "cw-pertanian-1",
+        id: "cw-1",
         tag: "WhatsApp Status",
-        title: "Status WA Petani",
-        content: "Rahasia panen melimpah bebas layu! Pupuk Organik Hayati Super Tani 1L ready stock langsung kirim dari gudang pusat."
+        title: "Status WA Petani & Toko Pertanian",
+        content: "Rahasia tanah subur panen melimpah! Nusatani Asam Humat Premium konsentrat tinggi pembenah tanah ready stok. Kirim langsung dari gudang supplier tangan pertama!"
+      },
+      {
+        id: "cw-2",
+        tag: "Edukasi Tanah",
+        title: "Edukasi Solusi Tanah Tandus",
+        content: "Sering pupuk tapi tanaman tetap lambat tumbuh? Kemungkinan tanah sudah jenuh dan padat. Segera benahi dengan Nusatani Asam Humat Premium agar pupuk terserap maksimal!"
       }
     ]
   },
@@ -271,28 +242,28 @@ export const INITIAL_PRODUCTS: Product[] = [
 ];
 
 export const INITIAL_ASSETS: ProductAsset[] = [
-  // Aset untuk Pupuk Hayati Super Tani (fa12954b-bf5f-4e6b-a361-d8ca6917fd52)
+  // Aset untuk Nusatani Asam Humat Premium (c6aa245a-3094-4ac6-adf2-11feec580867)
   {
-    id: "6d7bf5b0-8a22-4a38-968a-a010720f5a96",
-    product_id: "fa12954b-bf5f-4e6b-a361-d8ca6917fd52",
-    title: "Foto Botol Pupuk Hayati HD",
+    id: "ast-nusatani-foto",
+    product_id: "c6aa245a-3094-4ac6-adf2-11feec580867",
+    title: "Foto Produk Kemasan Nusatani Asam Humat Premium HD",
     media_type: "image",
     category_type: "feed",
-    file_url: "https://images.unsplash.com/photo-1628352081506-83c43123ed6d?auto=format&fit=crop&w=800&q=80",
-    thumbnail_url: "https://images.unsplash.com/photo-1628352081506-83c43123ed6d?auto=format&fit=crop&w=800&q=80",
-    file_size: "2.1 MB",
+    file_url: "https://pub-b5908ce97ecc42c18b39affa40116c39.r2.dev/photos/1793913789661-premium_asam_humat_garden_pouch.png",
+    thumbnail_url: "https://pub-b5908ce97ecc42c18b39affa40116c39.r2.dev/photos/1793913789661-premium_asam_humat_garden_pouch.png",
+    file_size: "2.7 MB",
     dimensions: "1080x1080 (1:1)",
     download_count: 52,
   },
   {
-    id: "ac8b21cd-ef34-4a12-9baf-ebd4b43aab5e",
-    product_id: "fa12954b-bf5f-4e6b-a361-d8ca6917fd52",
-    title: "Video Edukasi Aplikasi Pupuk Hayati",
+    id: "ast-nusatani-video",
+    product_id: "c6aa245a-3094-4ac6-adf2-11feec580867",
+    title: "Video Edukasi & Demo Aplikasi Nusatani Asam Humat",
     media_type: "video",
     category_type: "story",
-    file_url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
-    thumbnail_url: "https://images.unsplash.com/photo-1628352081506-83c43123ed6d?auto=format&fit=crop&w=800&q=80",
-    file_size: "14.2 MB",
+    file_url: "https://pub-b5908ce97ecc42c18b39affa40116c39.r2.dev/videos/1793913758315-asam_humat_1.mp4",
+    thumbnail_url: "https://pub-b5908ce97ecc42c18b39affa40116c39.r2.dev/covers/1793913713779-premium_asam_humat_garden_pouch.png",
+    file_size: "69.7 MB",
     dimensions: "1080x1920 (9:16)",
     download_count: 88,
   },
