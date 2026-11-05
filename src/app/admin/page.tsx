@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import { useProducts } from "@/context/ProductContext";
 import { formatRupiah } from "@/lib/utils";
+import { uploadFileToR2 } from "@/lib/r2Upload";
 import { Product, ProductAsset, AssetCategoryType, MediaType } from "@/types";
 import {
   ShieldAlert,
@@ -20,6 +21,8 @@ import {
   AlertCircle,
   UploadCloud,
   FileText,
+  Loader2,
+  FileUp,
 } from "lucide-react";
 
 export default function AdminPage() {
@@ -61,6 +64,17 @@ export default function AdminPage() {
   const [assetFileSize, setAssetFileSize] = useState("");
   const [assetDimensions, setAssetDimensions] = useState("1080x1080 (1:1)");
 
+  // R2 Direct Upload States
+  const [isUploadingCover, setIsUploadingCover] = useState(false);
+  const [coverUploadProgress, setCoverUploadProgress] = useState(0);
+  const [coverUploadError, setCoverUploadError] = useState("");
+
+  const [isUploadingAsset, setIsUploadingAsset] = useState(false);
+  const [assetUploadProgress, setAssetUploadProgress] = useState(0);
+  const [assetUploadError, setAssetUploadError] = useState("");
+  const [assetFileName, setAssetFileName] = useState("");
+  const [assetUploadMode, setAssetUploadMode] = useState<"file" | "url">("file");
+
   // Form State: Add Category
   const [newCatName, setNewCatName] = useState("");
   const [newCatDesc, setNewCatDesc] = useState("");
@@ -100,6 +114,64 @@ export default function AdminPage() {
       </div>
     );
   }
+
+  // Upload Handlers for Cloudflare R2
+  const handleCoverFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setIsUploadingCover(true);
+    setCoverUploadProgress(0);
+    setCoverUploadError("");
+    try {
+      const res = await uploadFileToR2(file, "covers", (pct) => setCoverUploadProgress(pct));
+      setNewProdCover(res.publicUrl);
+      notify("Foto sampul berhasil diunggah ke Cloudflare R2!");
+    } catch (err: any) {
+      setCoverUploadError(err.message || "Gagal mengunggah foto sampul.");
+    } finally {
+      setIsUploadingCover(false);
+    }
+  };
+
+  const handleAssetFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setIsUploadingAsset(true);
+    setAssetUploadProgress(0);
+    setAssetUploadError("");
+    setAssetFileName(file.name);
+
+    // Auto-detect type
+    const isVideo = file.type.startsWith("video/") || /\.(mp4|mov|webm|avi|mkv)$/i.test(file.name);
+    const mediaType: MediaType = isVideo ? "video" : "image";
+    setAssetMediaType(mediaType);
+    if (isVideo) {
+      setAssetCategoryType("story");
+      setAssetDimensions("1080x1920 (9:16)");
+    } else {
+      setAssetCategoryType("feed");
+      setAssetDimensions("1080x1080 (1:1)");
+    }
+
+    // Auto-set title if blank
+    if (!assetTitle) {
+      const cleanTitle = file.name.replace(/\.[^/.]+$/, "").replace(/[_-]/g, " ");
+      setAssetTitle(cleanTitle.charAt(0).toUpperCase() + cleanTitle.slice(1));
+    }
+
+    try {
+      const res = await uploadFileToR2(file, isVideo ? "videos" : "photos", (pct) => {
+        setAssetUploadProgress(pct);
+      });
+      setAssetFileUrl(res.publicUrl);
+      setAssetFileSize(res.fileSize);
+      notify(`${isVideo ? "Video" : "Foto"} "${file.name}" berhasil diunggah ke Cloudflare R2!`);
+    } catch (err: any) {
+      setAssetUploadError(err.message || "Gagal mengunggah file ke Cloudflare R2.");
+    } finally {
+      setIsUploadingAsset(false);
+    }
+  };
 
   // Handle Add Product Submit
   const handleCreateProduct = async (e: React.FormEvent) => {
@@ -182,6 +254,9 @@ export default function AdminPage() {
     setAssetTitle("");
     setAssetFileUrl("");
     setAssetFileSize("");
+    setAssetFileName("");
+    setAssetUploadProgress(0);
+    setAssetUploadError("");
   };
 
   // Handle Add Category Submit
@@ -680,20 +755,75 @@ export default function AdminPage() {
                 />
               </div>
 
-              <div>
-                <label className="text-xs font-bold text-gray-700 block mb-1">
-                  URL Foto Sampul (Cover Image)
-                </label>
-                <input
-                  type="url"
-                  value={newProdCover}
-                  onChange={(e) => setNewProdCover(e.target.value)}
-                  placeholder="https://images.unsplash.com/... atau URL file storage Anda"
-                  className="w-full px-3 py-2 text-xs border border-gray-200 rounded-xl outline-none focus:border-emerald-600"
-                />
-                <span className="text-[10px] text-gray-400 mt-1 block">
-                  Kosongkan jika ingin memakai gambar placeholder otomatis.
-                </span>
+              {/* Cover Image with R2 Upload */}
+              <div className="space-y-2 bg-gray-50/70 p-4 rounded-xl border border-gray-200">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-bold text-gray-700 block">
+                    Foto Sampul (Cover Image)
+                  </label>
+                  <span className="text-[10px] text-emerald-700 font-semibold bg-emerald-100/70 px-2 py-0.5 rounded-full">
+                    Cloudflare R2
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <label className="cursor-pointer inline-flex items-center gap-2 px-3.5 py-2 bg-white border border-gray-200 hover:bg-gray-50 text-gray-800 text-xs font-semibold rounded-xl transition shadow-sm">
+                    <FileUp className="w-4 h-4 text-emerald-600" />
+                    <span>{isUploadingCover ? "Mengunggah..." : "Pilih Foto dari Komputer"}</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleCoverFileUpload}
+                      disabled={isUploadingCover}
+                      className="hidden"
+                    />
+                  </label>
+
+                  {isUploadingCover && (
+                    <div className="flex items-center gap-2 text-xs text-emerald-600 font-semibold">
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      <span>Mengunggah... {coverUploadProgress}%</span>
+                    </div>
+                  )}
+                </div>
+
+                {coverUploadError && (
+                  <p className="text-[11px] text-rose-500 font-medium">{coverUploadError}</p>
+                )}
+
+                {newProdCover && (
+                  <div className="flex items-center gap-3 p-2 bg-emerald-50 rounded-xl border border-emerald-200">
+                    <img
+                      src={newProdCover}
+                      alt="Cover Preview"
+                      className="w-12 h-12 object-cover rounded-lg border border-gray-200"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <span className="text-[10px] font-bold text-emerald-700 block">✓ Foto Sampul Terpilih:</span>
+                      <p className="text-[11px] text-gray-600 truncate">{newProdCover}</p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setNewProdCover("")}
+                      className="text-xs text-rose-500 hover:underline px-2"
+                    >
+                      Hapus
+                    </button>
+                  </div>
+                )}
+
+                <div>
+                  <input
+                    type="url"
+                    value={newProdCover}
+                    onChange={(e) => setNewProdCover(e.target.value)}
+                    placeholder="Atau tempel link URL foto langsung di sini..."
+                    className="w-full px-3 py-2 text-xs border border-gray-200 rounded-xl outline-none focus:border-emerald-600 bg-white"
+                  />
+                  <span className="text-[10px] text-gray-400 mt-1 block">
+                    Bisa upload foto langsung ke Cloudflare R2 atau paste link manual.
+                  </span>
+                </div>
               </div>
 
               <div className="flex items-center justify-end gap-2 pt-3 border-t border-gray-100">
@@ -810,6 +940,93 @@ export default function AdminPage() {
                 </div>
               </div>
 
+              {/* Direct File Upload to Cloudflare R2 */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-bold text-gray-700">
+                    Pilih File Foto / Video (Upload Langsung ke Cloudflare R2)
+                  </label>
+                  <span className="text-[10px] text-emerald-700 font-semibold bg-emerald-100/70 px-2 py-0.5 rounded-full">
+                    Cloudflare R2 Direct
+                  </span>
+                </div>
+
+                <div
+                  className={`relative border-2 border-dashed rounded-2xl p-5 text-center transition ${
+                    assetFileUrl
+                      ? "border-emerald-300 bg-emerald-50/40"
+                      : "border-gray-200 hover:border-emerald-500 bg-gray-50/50"
+                  }`}
+                >
+                  <input
+                    type="file"
+                    accept="image/*,video/*"
+                    onChange={handleAssetFileUpload}
+                    disabled={isUploadingAsset}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed z-10"
+                  />
+
+                  {isUploadingAsset ? (
+                    <div className="space-y-3 py-2">
+                      <div className="flex items-center justify-center gap-2 text-xs font-bold text-emerald-700">
+                        <Loader2 className="w-4 h-4 animate-spin text-emerald-600" />
+                        <span>Mengunggah ke Cloudflare R2... {assetUploadProgress}%</span>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-2.5 overflow-hidden max-w-xs mx-auto">
+                        <div
+                          className="bg-emerald-600 h-2.5 rounded-full transition-all duration-200"
+                          style={{ width: `${assetUploadProgress}%` }}
+                        ></div>
+                      </div>
+                      <p className="text-[10px] text-gray-500 truncate max-w-xs mx-auto">{assetFileName}</p>
+                    </div>
+                  ) : assetFileUrl ? (
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-center gap-1.5 text-xs font-bold text-emerald-700">
+                        <CheckCircle className="w-4 h-4 text-emerald-600" />
+                        <span>File Berhasil Diunggah ke Cloudflare R2!</span>
+                      </div>
+
+                      {/* Preview Media */}
+                      {assetMediaType === "video" ? (
+                        <div className="max-w-xs mx-auto rounded-xl overflow-hidden bg-black shadow-sm">
+                          <video src={assetFileUrl} controls className="max-h-36 w-full object-contain" />
+                        </div>
+                      ) : (
+                        <div className="max-w-xs mx-auto rounded-xl overflow-hidden shadow-sm">
+                          <img
+                            src={assetFileUrl}
+                            alt="Preview"
+                            className="max-h-36 mx-auto object-cover rounded-xl"
+                          />
+                        </div>
+                      )}
+
+                      <p className="text-[11px] text-gray-500">Klik area ini atau seret file baru untuk mengganti.</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-2 py-3">
+                      <div className="w-10 h-10 rounded-2xl bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto">
+                        <FileUp className="w-5 h-5" />
+                      </div>
+                      <div className="text-xs text-gray-700">
+                        <span className="font-bold text-emerald-600 hover:underline">Klik untuk pilih file</span> atau seret file ke sini
+                      </div>
+                      <p className="text-[10px] text-gray-400">
+                        Mendukung MP4, MOV, WEBM, JPG, PNG (Langsung terunggah ke Cloudflare R2).
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                {assetUploadError && (
+                  <div className="p-3 bg-rose-50 border border-rose-200 text-rose-700 text-xs rounded-xl flex items-center gap-2">
+                    <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                    <span>{assetUploadError}</span>
+                  </div>
+                )}
+              </div>
+
               <div>
                 <label className="text-xs font-bold text-gray-700 block mb-1">
                   URL File Video / Gambar *
@@ -818,12 +1035,12 @@ export default function AdminPage() {
                   type="url"
                   value={assetFileUrl}
                   onChange={(e) => setAssetFileUrl(e.target.value)}
-                  placeholder="https://... (Link Cloudflare R2 / Supabase Storage / CDN)"
+                  placeholder="https://... (Terisi otomatis saat Anda pilih file di atas)"
                   className="w-full px-3 py-2 text-xs border border-gray-200 rounded-xl outline-none focus:border-emerald-600"
                   required
                 />
                 <span className="text-[10px] text-gray-400 mt-1 block">
-                  Bisa berupa link video MP4 langsung atau link gambar beresolusi tinggi.
+                  Terisi otomatis setelah upload, atau Anda bisa paste link manual.
                 </span>
               </div>
 
