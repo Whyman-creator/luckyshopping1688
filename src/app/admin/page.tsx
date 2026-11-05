@@ -6,6 +6,8 @@ import { useAuth } from "@/context/AuthContext";
 import { useProducts } from "@/context/ProductContext";
 import { formatRupiah } from "@/lib/utils";
 import { uploadFileToR2 } from "@/lib/r2Upload";
+import { IconPicker } from "@/components/IconPicker";
+import { CategoryIcon } from "@/components/CategoryIcon";
 import { Category, Product, ProductAsset, AssetCategoryType, MediaType } from "@/types";
 import {
   ShieldAlert,
@@ -673,21 +675,7 @@ export default function AdminPage() {
                 />
               </div>
 
-              <div>
-                <label className="text-xs font-bold text-gray-700 block mb-1">Pilihan Ikon</label>
-                <select
-                  value={newCatIcon}
-                  onChange={(e) => setNewCatIcon(e.target.value)}
-                  className="w-full px-3 py-2 text-xs border border-gray-200 rounded-xl outline-none focus:border-emerald-600 bg-white"
-                >
-                  <option value="Sparkles">Sparkles (Kecantikan/Skincare)</option>
-                  <option value="Shirt">Shirt (Fashion/Hijab)</option>
-                  <option value="HeartPulse">HeartPulse (Kesehatan/Herbal)</option>
-                  <option value="Headphones">Headphones (Gadget)</option>
-                  <option value="Utensils">Utensils (Kuliner/F&B)</option>
-                  <option value="Package">Package (Umum)</option>
-                </select>
-              </div>
+              <IconPicker value={newCatIcon} onChange={setNewCatIcon} />
 
               <button
                 type="submit"
@@ -716,8 +704,11 @@ export default function AdminPage() {
                   >
                     <div>
                       <div className="flex items-center justify-between gap-2">
-                        <h4 className="font-bold text-xs sm:text-sm text-gray-900">{c.name}</h4>
-                        <span className="text-[11px] bg-emerald-50 text-emerald-700 font-bold px-2 py-0.5 rounded-lg border border-emerald-100">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <CategoryIcon icon={c.icon} className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+                          <h4 className="font-bold text-xs sm:text-sm text-gray-900 truncate">{c.name}</h4>
+                        </div>
+                        <span className="text-[11px] bg-emerald-50 text-emerald-700 font-bold px-2 py-0.5 rounded-lg border border-emerald-100 flex-shrink-0">
                           {count} Produk
                         </span>
                       </div>
@@ -800,21 +791,7 @@ export default function AdminPage() {
                 />
               </div>
 
-              <div>
-                <label className="text-xs font-bold text-gray-700 block mb-1">Pilihan Ikon</label>
-                <select
-                  value={editCatIcon}
-                  onChange={(e) => setEditCatIcon(e.target.value)}
-                  className="w-full px-3 py-2 text-xs border border-gray-200 rounded-xl outline-none focus:border-emerald-600 bg-white"
-                >
-                  <option value="Sparkles">Sparkles (Kecantikan/Skincare)</option>
-                  <option value="Shirt">Shirt (Fashion/Hijab)</option>
-                  <option value="HeartPulse">HeartPulse (Kesehatan/Herbal)</option>
-                  <option value="Headphones">Headphones (Gadget)</option>
-                  <option value="Utensils">Utensils (Kuliner/F&B)</option>
-                  <option value="Package">Package (Umum)</option>
-                </select>
-              </div>
+              <IconPicker value={editCatIcon} onChange={setEditCatIcon} />
 
               <div className="flex items-center justify-end gap-2 pt-2">
                 <button

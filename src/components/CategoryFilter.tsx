@@ -2,6 +2,7 @@
 
 import React from "react";
 import { useProducts } from "@/context/ProductContext";
+import { CategoryIcon } from "@/components/CategoryIcon";
 import {
   Sparkles,
   Shirt,
@@ -78,7 +79,7 @@ export function CategoryFilter() {
                   : "bg-white hover:bg-gray-50 text-gray-700 border border-gray-200"
               }`}
             >
-              {getIcon(cat.icon)}
+              <CategoryIcon icon={cat.icon} />
               <span>{cat.name}</span>
               <span
                 className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold ${

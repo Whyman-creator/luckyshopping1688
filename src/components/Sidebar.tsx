@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { useProducts } from "@/context/ProductContext";
+import { CategoryIcon } from "@/components/CategoryIcon";
 import {
   Sparkles,
   Shirt,
@@ -142,7 +143,7 @@ export function Sidebar({
               }`}
             >
               <div className="flex items-center gap-2.5 truncate pr-2">
-                {getIcon(cat.icon)}
+                <CategoryIcon icon={cat.icon} />
                 <span className="truncate">{cat.name}</span>
               </div>
               <span
