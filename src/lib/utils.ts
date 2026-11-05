@@ -16,6 +16,19 @@ export function formatRupiah(amount: number): string {
   }).format(amount);
 }
 
+export function getMediaUrl(url: string | undefined | null): string {
+  if (!url) return "";
+  // Route Cloudflare R2 dev URLs through our same-origin /r2-media proxy
+  // to prevent mobile operator DNS blocks and CORS issues on Indonesian cellular networks
+  if (url.includes(".r2.dev/")) {
+    const parts = url.split(".r2.dev/");
+    if (parts.length > 1) {
+      return `/r2-media/${parts[1]}`;
+    }
+  }
+  return url;
+}
+
 export async function copyToClipboard(text: string): Promise<boolean> {
   try {
     if (navigator.clipboard && window.isSecureContext) {
@@ -42,8 +55,9 @@ export async function copyToClipboard(text: string): Promise<boolean> {
 }
 
 export async function downloadFile(url: string, filename: string): Promise<void> {
+  const targetUrl = getMediaUrl(url);
   try {
-    const response = await fetch(url, { mode: "cors" });
+    const response = await fetch(targetUrl);
     if (!response.ok) throw new Error("Network response was not ok");
     const blob = await response.blob();
     const blobUrl = window.URL.createObjectURL(blob);
@@ -55,9 +69,9 @@ export async function downloadFile(url: string, filename: string): Promise<void>
     document.body.removeChild(link);
     window.URL.revokeObjectURL(blobUrl);
   } catch {
-    // Direct open fallback if CORS blocks direct fetch
+    // Direct open fallback if fetch fails
     const link = document.createElement("a");
-    link.href = url;
+    link.href = targetUrl;
     link.target = "_blank";
     link.download = filename;
     link.rel = "noopener noreferrer";
@@ -89,7 +103,8 @@ export async function downloadAllAsZip(
     }
 
     try {
-      const response = await fetch(asset.file_url, { mode: "cors" });
+      const targetUrl = getMediaUrl(asset.file_url);
+      const response = await fetch(targetUrl);
       if (response.ok) {
         const blob = await response.blob();
         folder.file(filename, blob);

@@ -2,7 +2,7 @@
 
 import React, { useRef, useEffect } from "react";
 import { ProductAsset } from "@/types";
-import { downloadFile } from "@/lib/utils";
+import { downloadFile, getMediaUrl } from "@/lib/utils";
 import { X, Download, Play, Film, Image as ImageIcon } from "lucide-react";
 
 interface MediaViewerModalProps {
@@ -76,7 +76,7 @@ export function MediaViewerModal({ asset, onClose }: MediaViewerModalProps) {
           {isVideo ? (
             <video
               ref={videoRef}
-              src={asset.file_url}
+              src={getMediaUrl(asset.file_url)}
               controls
               autoPlay
               playsInline
@@ -86,7 +86,7 @@ export function MediaViewerModal({ asset, onClose }: MediaViewerModalProps) {
             </video>
           ) : (
             <img
-              src={asset.file_url}
+              src={getMediaUrl(asset.file_url)}
               alt={asset.title}
               className="max-h-[72vh] max-w-full object-contain"
             />

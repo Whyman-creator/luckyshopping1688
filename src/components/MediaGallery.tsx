@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { Product, ProductAsset } from "@/types";
-import { downloadFile, downloadAllAsZip } from "@/lib/utils";
+import { downloadFile, downloadAllAsZip, getMediaUrl } from "@/lib/utils";
 import { MediaViewerModal } from "@/components/MediaViewerModal";
 import { ProductKnowledgeTab } from "@/components/ProductKnowledgeTab";
 import {
@@ -259,7 +259,7 @@ export function MediaGallery({ assets, productName, product }: MediaGalleryProps
                       className="relative aspect-square w-full bg-gray-900 cursor-pointer overflow-hidden group/img"
                     >
                       <img
-                        src={asset.thumbnail_url || asset.file_url}
+                        src={getMediaUrl(asset.thumbnail_url || asset.file_url)}
                         alt={asset.title}
                         className="w-full h-full object-cover group-hover/img:scale-105 transition-transform duration-300 opacity-95 group-hover/img:opacity-100"
                         loading="lazy"
@@ -411,8 +411,8 @@ export function MediaGallery({ assets, productName, product }: MediaGalleryProps
                     {/* Inline Video Player Box */}
                     <div className="relative aspect-[4/5] w-full bg-black overflow-hidden flex items-center justify-center">
                       <video
-                        src={asset.file_url}
-                        poster={asset.thumbnail_url}
+                        src={getMediaUrl(asset.file_url)}
+                        poster={getMediaUrl(asset.thumbnail_url)}
                         controls
                         playsInline
                         preload="metadata"

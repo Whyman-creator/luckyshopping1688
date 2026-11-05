@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import { useProducts } from "@/context/ProductContext";
-import { formatRupiah } from "@/lib/utils";
+import { formatRupiah, getMediaUrl } from "@/lib/utils";
 import { uploadFileToR2 } from "@/lib/r2Upload";
 import { IconPicker } from "@/components/IconPicker";
 import { CategoryIcon } from "@/components/CategoryIcon";
@@ -502,7 +502,7 @@ export default function AdminPage() {
                     <tr key={p.id} className="hover:bg-gray-50/70 transition">
                       <td className="py-3 px-4 flex items-center gap-3">
                         <img
-                          src={p.cover_image}
+                          src={getMediaUrl(p.cover_image)}
                           alt={p.name}
                           className="w-10 h-10 rounded-lg object-cover flex-shrink-0"
                         />
@@ -583,7 +583,7 @@ export default function AdminPage() {
                       <td className="py-3 px-4">
                         <div className="w-12 h-12 rounded-lg bg-gray-900 overflow-hidden relative flex-shrink-0">
                           <img
-                            src={ast.thumbnail_url || ast.file_url}
+                            src={getMediaUrl(ast.thumbnail_url || ast.file_url)}
                             alt={ast.title}
                             className="w-full h-full object-cover"
                           />

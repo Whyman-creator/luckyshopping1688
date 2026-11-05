@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { Product } from "@/types";
 import { useProducts } from "@/context/ProductContext";
-import { formatRupiah } from "@/lib/utils";
+import { formatRupiah, getMediaUrl } from "@/lib/utils";
 import { Image as ImageIcon, Video, ArrowRight } from "lucide-react";
 
 interface ProductCardProps {
@@ -18,10 +18,10 @@ export function ProductCard({ product }: ProductCardProps) {
   const category = categories.find((c) => c.id === product.category_id);
   const assets = getAssetsByProductId(product.id);
 
-  const [imgSrc, setImgSrc] = useState(product.cover_image || FALLBACK_IMAGE);
+  const [imgSrc, setImgSrc] = useState(getMediaUrl(product.cover_image) || FALLBACK_IMAGE);
 
   useEffect(() => {
-    setImgSrc(product.cover_image || FALLBACK_IMAGE);
+    setImgSrc(getMediaUrl(product.cover_image) || FALLBACK_IMAGE);
   }, [product.cover_image]);
 
   const photoCount = assets.filter((a) => a.media_type === "image").length;
