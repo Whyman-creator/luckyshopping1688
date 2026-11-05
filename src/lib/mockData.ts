@@ -69,7 +69,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     price_consumer: 65000,
     price_partner: 65000,
     margin: 0,
-    cover_image: "https://images.unsplash.com/photo-1592417817098-8f3d69102a49?auto=format&fit=crop&w=800&q=80",
+    cover_image: "https://images.unsplash.com/photo-1628352081506-83c43123ed6d?auto=format&fit=crop&w=800&q=80",
     is_published: true,
     faqs: [
       {
@@ -278,8 +278,8 @@ export const INITIAL_ASSETS: ProductAsset[] = [
     title: "Foto Botol Pupuk Hayati HD",
     media_type: "image",
     category_type: "feed",
-    file_url: "https://images.unsplash.com/photo-1592417817098-8f3d69102a49?auto=format&fit=crop&w=1200&q=80",
-    thumbnail_url: "https://images.unsplash.com/photo-1592417817098-8f3d69102a49?auto=format&fit=crop&w=600&q=80",
+    file_url: "https://images.unsplash.com/photo-1628352081506-83c43123ed6d?auto=format&fit=crop&w=800&q=80",
+    thumbnail_url: "https://images.unsplash.com/photo-1628352081506-83c43123ed6d?auto=format&fit=crop&w=800&q=80",
     file_size: "2.1 MB",
     dimensions: "1080x1080 (1:1)",
     download_count: 52,
@@ -291,7 +291,7 @@ export const INITIAL_ASSETS: ProductAsset[] = [
     media_type: "video",
     category_type: "story",
     file_url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
-    thumbnail_url: "https://images.unsplash.com/photo-1592417817098-8f3d69102a49?auto=format&fit=crop&w=600&q=80",
+    thumbnail_url: "https://images.unsplash.com/photo-1628352081506-83c43123ed6d?auto=format&fit=crop&w=800&q=80",
     file_size: "14.2 MB",
     dimensions: "1080x1920 (9:16)",
     download_count: 88,

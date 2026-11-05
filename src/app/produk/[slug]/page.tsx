@@ -64,8 +64,11 @@ export default function ProductDetailPage() {
           {/* Main Cover Image */}
           <div className="w-full md:w-60 lg:w-72 aspect-square rounded-2xl overflow-hidden bg-gray-100 flex-shrink-0 relative shadow-sm border border-gray-100">
             <img
-              src={product.cover_image}
+              src={product.cover_image || "https://images.unsplash.com/photo-1628352081506-83c43123ed6d?auto=format&fit=crop&w=800&q=80"}
               alt={product.name}
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1628352081506-83c43123ed6d?auto=format&fit=crop&w=800&q=80";
+              }}
               className="w-full h-full object-cover"
             />
           </div>

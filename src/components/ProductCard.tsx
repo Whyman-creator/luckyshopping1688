@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { Product } from "@/types";
 import { useProducts } from "@/context/ProductContext";
@@ -11,10 +11,18 @@ interface ProductCardProps {
   product: Product;
 }
 
+const FALLBACK_IMAGE = "https://images.unsplash.com/photo-1628352081506-83c43123ed6d?auto=format&fit=crop&w=800&q=80";
+
 export function ProductCard({ product }: ProductCardProps) {
   const { categories, getAssetsByProductId } = useProducts();
   const category = categories.find((c) => c.id === product.category_id);
   const assets = getAssetsByProductId(product.id);
+
+  const [imgSrc, setImgSrc] = useState(product.cover_image || FALLBACK_IMAGE);
+
+  useEffect(() => {
+    setImgSrc(product.cover_image || FALLBACK_IMAGE);
+  }, [product.cover_image]);
 
   const photoCount = assets.filter((a) => a.media_type === "image").length;
   const videoCount = assets.filter((a) => a.media_type === "video").length;
@@ -24,8 +32,9 @@ export function ProductCard({ product }: ProductCardProps) {
       {/* Thumbnail Area */}
       <div className="relative aspect-[4/3] w-full overflow-hidden bg-gray-100">
         <img
-          src={product.cover_image}
+          src={imgSrc}
           alt={product.name}
+          onError={() => setImgSrc(FALLBACK_IMAGE)}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           loading="lazy"
         />
