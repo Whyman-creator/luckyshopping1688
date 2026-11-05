@@ -20,6 +20,8 @@ interface ProductContextType {
   updateProduct: (id: string, product: Partial<Product>) => Promise<void>;
   deleteProduct: (id: string) => Promise<void>;
   addCategory: (category: Omit<Category, "id" | "slug">) => Promise<Category>;
+  updateCategory: (id: string, category: Partial<Category>) => Promise<void>;
+  deleteCategory: (id: string) => Promise<void>;
   addAsset: (asset: Omit<ProductAsset, "id">) => Promise<ProductAsset>;
   deleteAsset: (id: string) => Promise<void>;
   isLoading: boolean;
@@ -223,6 +225,36 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
     return newCategory;
   };
 
+  // Update Category
+  const updateCategory = async (id: string, catData: Partial<Category>) => {
+    if (isSupabaseConfigured && supabase) {
+      try {
+        await supabase.from("categories").update(catData).eq("id", id);
+      } catch (err) {
+        console.error("Error updating category in Supabase:", err);
+      }
+    }
+
+    const updated = categories.map((c) => (c.id === id ? { ...c, ...catData } : c));
+    setCategories(updated);
+    localStorage.setItem("mitra_hub_categories", JSON.stringify(updated));
+  };
+
+  // Delete Category
+  const deleteCategory = async (id: string) => {
+    if (isSupabaseConfigured && supabase) {
+      try {
+        await supabase.from("categories").delete().eq("id", id);
+      } catch (err) {
+        console.error("Error deleting category from Supabase:", err);
+      }
+    }
+
+    const updated = categories.filter((c) => c.id !== id);
+    setCategories(updated);
+    localStorage.setItem("mitra_hub_categories", JSON.stringify(updated));
+  };
+
   // Add Asset
   const addAsset = async (assetData: Omit<ProductAsset, "id">): Promise<ProductAsset> => {
     const newAsset: ProductAsset = {
@@ -279,6 +311,8 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
         updateProduct,
         deleteProduct,
         addCategory,
+        updateCategory,
+        deleteCategory,
         addAsset,
         deleteAsset,
         isLoading,

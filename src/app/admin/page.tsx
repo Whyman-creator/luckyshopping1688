@@ -6,7 +6,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useProducts } from "@/context/ProductContext";
 import { formatRupiah } from "@/lib/utils";
 import { uploadFileToR2 } from "@/lib/r2Upload";
-import { Product, ProductAsset, AssetCategoryType, MediaType } from "@/types";
+import { Category, Product, ProductAsset, AssetCategoryType, MediaType } from "@/types";
 import {
   ShieldAlert,
   Plus,
@@ -23,6 +23,8 @@ import {
   FileText,
   Loader2,
   FileUp,
+  Edit2,
+  FolderPlus,
 } from "lucide-react";
 
 export default function AdminPage() {
@@ -36,6 +38,8 @@ export default function AdminPage() {
     addAsset,
     deleteAsset,
     addCategory,
+    updateCategory,
+    deleteCategory,
   } = useProducts();
 
   const [activeTab, setActiveTab] = useState<"products" | "assets" | "categories">("products");
@@ -79,6 +83,12 @@ export default function AdminPage() {
   const [newCatName, setNewCatName] = useState("");
   const [newCatDesc, setNewCatDesc] = useState("");
   const [newCatIcon, setNewCatIcon] = useState("Package");
+
+  // Form State: Edit Category
+  const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+  const [editCatName, setEditCatName] = useState("");
+  const [editCatDesc, setEditCatDesc] = useState("");
+  const [editCatIcon, setEditCatIcon] = useState("Package");
 
   const notify = (msg: string) => {
     setSuccessMsg(msg);
@@ -275,6 +285,27 @@ export default function AdminPage() {
     setNewCatDesc("");
   };
 
+  const startEditingCategory = (cat: Category) => {
+    setEditingCategory(cat);
+    setEditCatName(cat.name);
+    setEditCatDesc(cat.description || "");
+    setEditCatIcon(cat.icon || "Package");
+  };
+
+  const handleUpdateCategory = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingCategory || !editCatName) return;
+
+    await updateCategory(editingCategory.id, {
+      name: editCatName,
+      description: editCatDesc,
+      icon: editCatIcon,
+    });
+
+    notify(`Kategori "${editCatName}" berhasil diperbarui!`);
+    setEditingCategory(null);
+  };
+
   return (
     <div className="space-y-6 sm:space-y-8 animate-in fade-in duration-200">
       {/* Header Bar */}
@@ -302,10 +333,22 @@ export default function AdminPage() {
         </div>
 
         {/* Action Buttons */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center flex-wrap gap-2">
+          <button
+            onClick={() => setActiveTab("categories")}
+            className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl font-semibold text-xs sm:text-sm transition shadow-sm ${
+              activeTab === "categories"
+                ? "bg-blue-600 text-white shadow-blue-600/20"
+                : "bg-white border border-gray-200 text-gray-700 hover:bg-gray-50"
+            }`}
+          >
+            <Layers className="w-4 h-4 text-blue-500" />
+            <span>Kelola Kategori</span>
+          </button>
+
           <button
             onClick={() => setIsAddAssetOpen(true)}
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gray-900 hover:bg-gray-800 text-white font-semibold text-xs sm:text-sm transition shadow-sm"
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-gray-900 hover:bg-gray-800 text-white font-semibold text-xs sm:text-sm transition shadow-sm"
           >
             <UploadCloud className="w-4 h-4 text-emerald-400" />
             <span>Upload Aset Baru</span>
@@ -313,7 +356,7 @@ export default function AdminPage() {
 
           <button
             onClick={() => setIsAddProductOpen(true)}
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs sm:text-sm transition shadow-sm shadow-emerald-600/20"
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs sm:text-sm transition shadow-sm shadow-emerald-600/20"
           >
             <Plus className="w-4 h-4" />
             <span>Tambah Produk</span>
@@ -329,9 +372,16 @@ export default function AdminPage() {
         </div>
       )}
 
-      {/* Summary Stat Cards */}
+      {/* Summary Stat Cards (Clickable) */}
       <div className="grid grid-cols-3 gap-3 sm:gap-5">
-        <div className="bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between">
+        <button
+          onClick={() => setActiveTab("products")}
+          className={`p-4 sm:p-5 rounded-2xl border text-left transition flex items-center justify-between cursor-pointer ${
+            activeTab === "products"
+              ? "bg-emerald-50/70 border-emerald-300 ring-2 ring-emerald-500/20 shadow-sm"
+              : "bg-white border-gray-100 hover:border-gray-200 shadow-sm hover:shadow"
+          }`}
+        >
           <div>
             <span className="text-[10px] sm:text-xs text-gray-400 font-bold uppercase tracking-wider block">
               Total Produk
@@ -343,9 +393,16 @@ export default function AdminPage() {
           <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
             <Package className="w-5 h-5" />
           </div>
-        </div>
+        </button>
 
-        <div className="bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between">
+        <button
+          onClick={() => setActiveTab("assets")}
+          className={`p-4 sm:p-5 rounded-2xl border text-left transition flex items-center justify-between cursor-pointer ${
+            activeTab === "assets"
+              ? "bg-rose-50/70 border-rose-300 ring-2 ring-rose-500/20 shadow-sm"
+              : "bg-white border-gray-100 hover:border-gray-200 shadow-sm hover:shadow"
+          }`}
+        >
           <div>
             <span className="text-[10px] sm:text-xs text-gray-400 font-bold uppercase tracking-wider block">
               Bahan Promosi
@@ -357,12 +414,19 @@ export default function AdminPage() {
           <div className="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center">
             <Film className="w-5 h-5" />
           </div>
-        </div>
+        </button>
 
-        <div className="bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between">
+        <button
+          onClick={() => setActiveTab("categories")}
+          className={`p-4 sm:p-5 rounded-2xl border text-left transition flex items-center justify-between cursor-pointer ${
+            activeTab === "categories"
+              ? "bg-blue-50/70 border-blue-300 ring-2 ring-blue-500/20 shadow-sm"
+              : "bg-white border-gray-100 hover:border-gray-200 shadow-sm hover:shadow"
+          }`}
+        >
           <div>
             <span className="text-[10px] sm:text-xs text-gray-400 font-bold uppercase tracking-wider block">
-              Kategori
+              Kategori Produk
             </span>
             <span className="text-xl sm:text-3xl font-extrabold text-gray-900 mt-1 block">
               {categories.length}
@@ -371,7 +435,7 @@ export default function AdminPage() {
           <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
             <Layers className="w-5 h-5" />
           </div>
-        </div>
+        </button>
       </div>
 
       {/* Tabs Navigation */}
@@ -636,26 +700,138 @@ export default function AdminPage() {
 
           {/* Categories List */}
           <div className="md:col-span-2 bg-white p-5 rounded-2xl border border-gray-100 shadow-sm space-y-3">
-            <h3 className="font-bold text-gray-900 mb-2">Daftar Kategori Aktif</h3>
+            <h3 className="font-bold text-gray-900 mb-2 flex items-center justify-between">
+              <span>Daftar Kategori Aktif</span>
+              <span className="text-xs text-gray-400 font-normal">
+                {categories.length} Kategori Tersedia
+              </span>
+            </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {categories.map((c) => {
                 const count = products.filter((p) => p.category_id === c.id).length;
                 return (
                   <div
                     key={c.id}
-                    className="p-3.5 rounded-xl border border-gray-200 flex items-center justify-between bg-gray-50/50"
+                    className="p-4 rounded-2xl border border-gray-200 flex flex-col justify-between gap-3 bg-gray-50/50 hover:bg-white transition hover:shadow-sm"
                   >
                     <div>
-                      <h4 className="font-bold text-xs sm:text-sm text-gray-900">{c.name}</h4>
-                      <p className="text-[11px] text-gray-400 mt-0.5">{c.description || "Tanpa deskripsi"}</p>
+                      <div className="flex items-center justify-between gap-2">
+                        <h4 className="font-bold text-xs sm:text-sm text-gray-900">{c.name}</h4>
+                        <span className="text-[11px] bg-emerald-50 text-emerald-700 font-bold px-2 py-0.5 rounded-lg border border-emerald-100">
+                          {count} Produk
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-gray-500 mt-1 line-clamp-2">
+                        {c.description || "Tanpa deskripsi"}
+                      </p>
                     </div>
-                    <span className="text-xs bg-white border border-gray-200 text-gray-600 font-bold px-2 py-1 rounded-lg">
-                      {count} Produk
-                    </span>
+
+                    <div className="flex items-center justify-end gap-1.5 pt-2 border-t border-gray-200/60">
+                      <button
+                        onClick={() => startEditingCategory(c)}
+                        className="inline-flex items-center gap-1 px-2.5 py-1 text-xs text-gray-600 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg transition"
+                      >
+                        <Edit2 className="w-3.5 h-3.5" />
+                        <span>Edit</span>
+                      </button>
+
+                      <button
+                        onClick={() => {
+                          if (
+                            confirm(
+                              `Hapus kategori "${c.name}"? Produk yang terkait akan tetap ada tetapi tanpa kategori.`
+                            )
+                          ) {
+                            deleteCategory(c.id);
+                            notify(`Kategori "${c.name}" berhasil dihapus.`);
+                          }
+                        }}
+                        className="inline-flex items-center gap-1 px-2.5 py-1 text-xs text-gray-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition"
+                        title="Hapus Kategori"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                        <span>Hapus</span>
+                      </button>
+                    </div>
                   </div>
                 );
               })}
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: EDIT CATEGORY */}
+      {editingCategory && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 overflow-y-auto">
+          <div className="bg-white rounded-3xl max-w-md w-full p-6 sm:p-7 shadow-2xl border border-gray-100 space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-gray-100">
+              <h2 className="text-base font-bold text-gray-900 flex items-center gap-2">
+                <Edit2 className="w-4 h-4 text-emerald-600" />
+                <span>Edit Kategori</span>
+              </h2>
+              <button
+                onClick={() => setEditingCategory(null)}
+                className="text-gray-400 hover:text-gray-600 text-sm font-bold"
+              >
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={handleUpdateCategory} className="space-y-3">
+              <div>
+                <label className="text-xs font-bold text-gray-700 block mb-1">Nama Kategori</label>
+                <input
+                  type="text"
+                  value={editCatName}
+                  onChange={(e) => setEditCatName(e.target.value)}
+                  className="w-full px-3 py-2 text-xs border border-gray-200 rounded-xl outline-none focus:border-emerald-600"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="text-xs font-bold text-gray-700 block mb-1">Deskripsi Singkat</label>
+                <input
+                  type="text"
+                  value={editCatDesc}
+                  onChange={(e) => setEditCatDesc(e.target.value)}
+                  className="w-full px-3 py-2 text-xs border border-gray-200 rounded-xl outline-none focus:border-emerald-600"
+                />
+              </div>
+
+              <div>
+                <label className="text-xs font-bold text-gray-700 block mb-1">Pilihan Ikon</label>
+                <select
+                  value={editCatIcon}
+                  onChange={(e) => setEditCatIcon(e.target.value)}
+                  className="w-full px-3 py-2 text-xs border border-gray-200 rounded-xl outline-none focus:border-emerald-600 bg-white"
+                >
+                  <option value="Sparkles">Sparkles (Kecantikan/Skincare)</option>
+                  <option value="Shirt">Shirt (Fashion/Hijab)</option>
+                  <option value="HeartPulse">HeartPulse (Kesehatan/Herbal)</option>
+                  <option value="Headphones">Headphones (Gadget)</option>
+                  <option value="Utensils">Utensils (Kuliner/F&B)</option>
+                  <option value="Package">Package (Umum)</option>
+                </select>
+              </div>
+
+              <div className="flex items-center justify-end gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setEditingCategory(null)}
+                  className="px-3.5 py-2 border border-gray-200 text-gray-600 rounded-xl text-xs font-semibold hover:bg-gray-50"
+                >
+                  Batal
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-sm"
+                >
+                  Simpan Perubahan
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}
