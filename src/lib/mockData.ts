@@ -2,12 +2,20 @@ import { Category, Product, ProductAsset } from "@/types";
 
 export const INITIAL_CATEGORIES: Category[] = [
   {
+    id: "b25f80e6-4f9c-417a-8a8d-842b3baa2ee4",
+    name: "Pertanian & Alam",
+    slug: "pertanian-alam",
+    description: "Bibit, pupuk, alat pertanian, dan hasil kebun.",
+    icon: "🌾",
+    display_order: 1,
+  },
+  {
     id: "cat-1",
     name: "Skincare & Kecantikan",
     slug: "skincare-kecantikan",
     description: "Serum, toner, sunscreen, dan perawatan wajah terlaris.",
     icon: "Sparkles",
-    display_order: 1,
+    display_order: 2,
   },
   {
     id: "cat-2",
@@ -15,7 +23,7 @@ export const INITIAL_CATEGORIES: Category[] = [
     slug: "fashion-hijab",
     description: "Koleksi hijab voal, gamis, dan outfit trendy.",
     icon: "Shirt",
-    display_order: 2,
+    display_order: 3,
   },
   {
     id: "cat-3",
@@ -23,7 +31,7 @@ export const INITIAL_CATEGORIES: Category[] = [
     slug: "herbal-kesehatan",
     description: "Madu murni, suplemen herbal, dan peningkat imun tubuh.",
     icon: "HeartPulse",
-    display_order: 3,
+    display_order: 4,
   },
   {
     id: "cat-4",
@@ -31,7 +39,7 @@ export const INITIAL_CATEGORIES: Category[] = [
     slug: "gadget-aksesoris",
     description: "TWS Earphone, smartwatch, dan aksesoris HP kekinian.",
     icon: "Headphones",
-    display_order: 4,
+    display_order: 5,
   },
   {
     id: "cat-5",
@@ -39,11 +47,45 @@ export const INITIAL_CATEGORIES: Category[] = [
     slug: "makanan-minuman",
     description: "Camilan viral dan kopi bubuk nusantara.",
     icon: "Utensils",
-    display_order: 5,
+    display_order: 6,
   },
 ];
 
 export const INITIAL_PRODUCTS: Product[] = [
+  {
+    id: "fa12954b-bf5f-4e6b-a361-d8ca6917fd52",
+    name: "Pupuk Organik Cair Hayati Super Tani 1 Liter",
+    slug: "pupuk-organik-cair-hayati-super-tani-1-liter",
+    category_id: "b25f80e6-4f9c-417a-8a8d-842b3baa2ee4",
+    short_description: "Pupuk hayati penyubur tanah dan perangsang buah/tunas cepat tumbuh alami.",
+    full_description: "Pupuk hayati cair konsentrat tinggi mengandung mikroba penyubur tanah Bacillus sp. dan Trichoderma sp. Mempercepat pertumbuhan akar, memperbanyak anakan padi, dan meningkatkan hasil panen hingga 40%.",
+    usp: [
+      "100% Organik Alami",
+      "Meningkatkan Hasil Panen 40%",
+      "Mencegah Layu & Hama Jamur"
+    ],
+    target_market: "Petani padi, sayuran hortikultura, dan perkebunan.",
+    price: 65000,
+    price_consumer: 65000,
+    price_partner: 65000,
+    margin: 0,
+    cover_image: "https://images.unsplash.com/photo-1592417817098-8f3d69102a49?auto=format&fit=crop&w=800&q=80",
+    is_published: true,
+    faqs: [
+      {
+        question: "Bagaimana cara pemakaiannya?",
+        answer: "Campurkan 3-5 tutup botol ke dalam tangki semprot 14-16 liter air."
+      }
+    ],
+    copywritings: [
+      {
+        id: "cw-pertanian-1",
+        tag: "WhatsApp Status",
+        title: "Status WA Petani",
+        content: "Rahasia panen melimpah bebas layu! Pupuk Organik Hayati Super Tani 1L ready stock langsung kirim dari gudang pusat."
+      }
+    ]
+  },
   {
     id: "prod-1",
     name: "Glow Radiance 10% Niacinamide Serum",
@@ -229,6 +271,31 @@ export const INITIAL_PRODUCTS: Product[] = [
 ];
 
 export const INITIAL_ASSETS: ProductAsset[] = [
+  // Aset untuk Pupuk Hayati Super Tani (fa12954b-bf5f-4e6b-a361-d8ca6917fd52)
+  {
+    id: "6d7bf5b0-8a22-4a38-968a-a010720f5a96",
+    product_id: "fa12954b-bf5f-4e6b-a361-d8ca6917fd52",
+    title: "Foto Botol Pupuk Hayati HD",
+    media_type: "image",
+    category_type: "feed",
+    file_url: "https://images.unsplash.com/photo-1592417817098-8f3d69102a49?auto=format&fit=crop&w=1200&q=80",
+    thumbnail_url: "https://images.unsplash.com/photo-1592417817098-8f3d69102a49?auto=format&fit=crop&w=600&q=80",
+    file_size: "2.1 MB",
+    dimensions: "1080x1080 (1:1)",
+    download_count: 52,
+  },
+  {
+    id: "ac8b21cd-ef34-4a12-9baf-ebd4b43aab5e",
+    product_id: "fa12954b-bf5f-4e6b-a361-d8ca6917fd52",
+    title: "Video Edukasi Aplikasi Pupuk Hayati",
+    media_type: "video",
+    category_type: "story",
+    file_url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+    thumbnail_url: "https://images.unsplash.com/photo-1592417817098-8f3d69102a49?auto=format&fit=crop&w=600&q=80",
+    file_size: "14.2 MB",
+    dimensions: "1080x1920 (9:16)",
+    download_count: 88,
+  },
   // Aset untuk Glow Radiance Serum (prod-1)
   {
     id: "ast-1-1",

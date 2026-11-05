@@ -47,9 +47,24 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
       const savedProds = localStorage.getItem("mitra_hub_products");
       const savedAssets = localStorage.getItem("mitra_hub_assets");
 
-      if (savedCats) setCategories(JSON.parse(savedCats));
-      if (savedProds) setProducts(JSON.parse(savedProds));
-      if (savedAssets) setAssets(JSON.parse(savedAssets));
+      if (savedProds) {
+        try {
+          const parsed = JSON.parse(savedProds);
+          // Purge stale mock products from early dev
+          const hasDummyMock = parsed.some((p: Product) => p.id === "prod-1" || p.name?.includes("Niacinamide"));
+          if (hasDummyMock) {
+            localStorage.removeItem("mitra_hub_categories");
+            localStorage.removeItem("mitra_hub_products");
+            localStorage.removeItem("mitra_hub_assets");
+          } else {
+            setProducts(parsed);
+            if (savedCats) setCategories(JSON.parse(savedCats));
+            if (savedAssets) setAssets(JSON.parse(savedAssets));
+          }
+        } catch {
+          // ignore corrupted storage
+        }
+      }
 
       // If Supabase is connected, fetch from database
       if (isSupabaseConfigured && supabase) {
@@ -70,14 +85,17 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
             .select("*")
             .order("created_at", { ascending: false });
 
-          if (!errCats && dbCategories) {
+          if (!errCats && dbCategories && dbCategories.length > 0) {
             setCategories(dbCategories);
+            localStorage.setItem("mitra_hub_categories", JSON.stringify(dbCategories));
           }
-          if (!errProds && dbProducts) {
+          if (!errProds && dbProducts && dbProducts.length > 0) {
             setProducts(dbProducts);
+            localStorage.setItem("mitra_hub_products", JSON.stringify(dbProducts));
           }
           if (!errAssets && dbAssets) {
             setAssets(dbAssets);
+            localStorage.setItem("mitra_hub_assets", JSON.stringify(dbAssets));
           }
         } catch (err) {
           console.error("Error loading data from Supabase:", err);
