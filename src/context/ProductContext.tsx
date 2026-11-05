@@ -54,29 +54,29 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
       // If Supabase is connected, fetch from database
       if (isSupabaseConfigured && supabase) {
         try {
-          const { data: dbCategories } = await supabase
+          const { data: dbCategories, error: errCats } = await supabase
             .from("categories")
             .select("*")
             .order("display_order", { ascending: true });
 
-          const { data: dbProducts } = await supabase
+          const { data: dbProducts, error: errProds } = await supabase
             .from("products")
             .select("*, category:categories(*)")
             .eq("is_published", true)
             .order("created_at", { ascending: false });
 
-          const { data: dbAssets } = await supabase
+          const { data: dbAssets, error: errAssets } = await supabase
             .from("product_assets")
             .select("*")
             .order("created_at", { ascending: false });
 
-          if (dbCategories && dbCategories.length > 0) {
+          if (!errCats && dbCategories) {
             setCategories(dbCategories);
           }
-          if (dbProducts && dbProducts.length > 0) {
+          if (!errProds && dbProducts) {
             setProducts(dbProducts);
           }
-          if (dbAssets && dbAssets.length > 0) {
+          if (!errAssets && dbAssets) {
             setAssets(dbAssets);
           }
         } catch (err) {
@@ -212,8 +212,22 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
 
     if (isSupabaseConfigured && supabase) {
       try {
-        const { data } = await supabase.from("categories").insert(newCategory).select().single();
-        if (data) newCategory.id = data.id;
+        const { data, error } = await supabase
+          .from("categories")
+          .insert({
+            name: catData.name,
+            slug,
+            description: catData.description || "",
+            icon: catData.icon || "Package",
+            display_order: categories.length + 1,
+          })
+          .select()
+          .single();
+        if (error) {
+          console.error("Error adding category to Supabase:", error);
+        } else if (data) {
+          newCategory.id = data.id;
+        }
       } catch (err) {
         console.error("Error adding category to Supabase:", err);
       }
@@ -266,8 +280,25 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
 
     if (isSupabaseConfigured && supabase) {
       try {
-        const { data } = await supabase.from("product_assets").insert(newAsset).select().single();
-        if (data) newAsset.id = data.id;
+        const { data, error } = await supabase
+          .from("product_assets")
+          .insert({
+            product_id: assetData.product_id,
+            title: assetData.title,
+            media_type: assetData.media_type,
+            category_type: assetData.category_type,
+            file_url: assetData.file_url,
+            thumbnail_url: assetData.thumbnail_url || assetData.file_url,
+            file_size: assetData.file_size || "",
+            dimensions: assetData.dimensions || "",
+          })
+          .select()
+          .single();
+        if (error) {
+          console.error("Error adding asset to Supabase:", error);
+        } else if (data) {
+          newAsset.id = data.id;
+        }
       } catch (err) {
         console.error("Error adding asset to Supabase:", err);
       }
