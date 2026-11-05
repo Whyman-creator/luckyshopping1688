@@ -26,26 +26,6 @@ export function Navbar() {
   return (
     <>
       <header className="sticky top-0 z-40 w-full bg-white/95 backdrop-blur-md border-b border-gray-100 shadow-sm transition-all">
-        {/* Top Announcement Bar */}
-        <div className="bg-gradient-to-r from-emerald-700 via-teal-800 to-emerald-900 text-white text-[11px] sm:text-xs py-1.5 px-4 font-medium flex items-center justify-between">
-          <div className="flex items-center gap-1.5 mx-auto sm:mx-0">
-            <Sparkles className="w-3.5 h-3.5 text-emerald-300" />
-            <span>Penyedia Dropship Tangan Pertama — Bebas Ambil Foto & Video Produk untuk Toko Online Anda</span>
-          </div>
-
-          {/* Device Kick Simulation Shortcut for Testing */}
-          {isLoggedIn && (
-            <button
-              onClick={simulateDeviceKick}
-              title="Klik untuk mensimulasikan ada perangkat lain (Laptop/HP) yang login dengan akun ini"
-              className="hidden md:inline-flex items-center gap-1 text-[10px] bg-black/20 hover:bg-black/30 px-2 py-0.5 rounded-full transition text-emerald-100"
-            >
-              <Smartphone className="w-3 h-3 text-amber-300" />
-              <span>Tes Sesi Ganda (Simulasi Kick)</span>
-            </button>
-          )}
-        </div>
-
         {/* Main Nav */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
           {/* Brand Logo */}
